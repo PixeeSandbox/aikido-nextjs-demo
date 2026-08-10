@@ -1,0 +1,11 @@
+// Concatenated with prisma/models/*.prisma by `pnpm run make-prisma-schema`.
+// Do not edit the generated schema.prisma directly — it is gitignored.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}

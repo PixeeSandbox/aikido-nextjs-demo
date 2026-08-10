@@ -1,0 +1,50 @@
+name: Dependency review
+
+on:
+  pull_request:
+    paths:
+      - package.json
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+      - packages/*/package.json
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+          comment-summary-in-pr: always
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.5.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      # Catches the pnpm 11 footgun: overrides added to package.json instead of
+      # pnpm-workspace.yaml resolve to nothing and the CVE stays open.
+      - name: Report dependency pins
+        run: pnpm run deps:report
+
+      - name: Reject pnpm.overrides in package.json
+        run: |
+          if node -e "process.exit(require('./package.json').pnpm ? 1 : 0)"; then
+            echo "no pnpm key in package.json"
+          else
+            echo "::error file=package.json::pnpm 11 ignores package.json overrides; use pnpm-workspace.yaml"
+            exit 1
+          fi

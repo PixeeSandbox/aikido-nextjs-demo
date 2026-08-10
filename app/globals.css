@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: 'Bitter', Georgia, serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --focus-ring: theme('colors.ember.400');
+}
+
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+
+  a {
+    text-underline-offset: 0.2em;
+  }
+}
+
+@layer components {
+  .starfield {
+    background-image: radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.35) 0 1px, transparent 1px),
+      radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.25) 0 1px, transparent 1px);
+    background-size: 180px 180px, 240px 240px;
+  }
+
+  .field-label {
+    @apply mb-1 block text-sm font-medium text-night-50/80;
+  }
+
+  .field-input {
+    @apply w-full rounded border border-night-500 bg-night-800 px-3 py-2 text-night-50;
+  }
+
+  .field-error {
+    @apply mt-1 text-sm text-ember-400;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

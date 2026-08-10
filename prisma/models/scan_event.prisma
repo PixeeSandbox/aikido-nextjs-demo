@@ -1,0 +1,12 @@
+model ScanEvent {
+  id          String   @id @default(cuid())
+  orderLineId String
+  gate        String
+  scannedAt   DateTime @default(now())
+  /// Duplicate scans are recorded rather than rejected so gate staff can audit them.
+  duplicate   Boolean  @default(false)
+
+  @@index([orderLineId])
+  @@index([scannedAt])
+  @@index([gate, scannedAt])
+}

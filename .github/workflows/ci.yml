@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NEXT_PUBLIC_SANITY_PROJECT_ID: ci-project
+  NEXT_PUBLIC_SANITY_DATASET: test
+  NEXT_PUBLIC_SANITY_API_VERSION: '2026-01-15'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: cedarwood
+          POSTGRES_PASSWORD: cedarwood
+          POSTGRES_DB: cedarwood_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.5.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Format check
+        run: pnpm run lint:format
+
+      - name: Type check
+        run: pnpm run type-check
+
+      - name: Unit tests
+        run: pnpm run test:unit -- --ci
+        env:
+          DATABASE_URL: postgresql://cedarwood:cedarwood@localhost:5432/cedarwood_test?schema=public
+          NEXTAUTH_SECRET: ci-secret-not-used-in-production
+          NEXTAUTH_URL: http://localhost:3000
+          CHECKOUT_MERCHANT_ID: ci-merchant
+          CHECKOUT_API_KEY: ci-key
+
+      - name: Build
+        run: pnpm run check-build

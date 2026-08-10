@@ -1,0 +1,13 @@
+model EntrySlot {
+  id           String   @id @default(cuid())
+  ticketTypeId String
+  /// Denormalised YYYY-MM-DD so day lookups avoid a timezone-sensitive range scan.
+  day          String
+  startsAt     DateTime
+  capacity     Int
+  booked       Int      @default(0)
+  updatedAt    DateTime @updatedAt
+
+  @@unique([ticketTypeId, startsAt])
+  @@index([ticketTypeId, day])
+}

@@ -1,0 +1,21 @@
+{
+  "name": "@cedarwood/pos-terminal",
+  "version": "1.8.4",
+  "private": true,
+  "description": "Card-present terminal fleet client for on-site admissions desks.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "date-fns": "^4.4.0"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3"
+  }
+}

@@ -1,0 +1,35 @@
+model Order {
+  id            String    @id @default(cuid())
+  email         String
+  name          String
+  memberId      String?
+  subtotalCents Int
+  giftAidOptIn  Boolean   @default(false)
+  notes         String?
+  status        String    @default("pending")
+  pspReference  String?
+  paidAt        DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  member Member?     @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  lines  OrderLine[]
+
+  @@index([status, createdAt])
+  @@index([memberId])
+  @@index([email])
+}
+
+model OrderLine {
+  id           String @id @default(cuid())
+  orderId      String
+  ticketTypeId String
+  category     String
+  quantity     Int
+  visitDate    String
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([ticketTypeId, visitDate])
+}

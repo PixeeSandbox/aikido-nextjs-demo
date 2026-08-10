@@ -1,0 +1,8 @@
+.next/
+node_modules/
+coverage/
+pnpm-lock.yaml
+schema.prisma
+migrations/
+packages/*/dist/
+playwright-report/
